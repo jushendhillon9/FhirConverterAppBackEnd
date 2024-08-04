@@ -16,6 +16,11 @@ java {
 jar {
     archiveFileName = 'FhirConverterApp.jar'
     destinationDirectory = file("$buildDir/libs")
+	manifest {
+        attributes(
+            'Main-Class': 'com.localhost.FileTypeChecker'  // Replace with your actual main class
+        )
+    }
 }
 
 
