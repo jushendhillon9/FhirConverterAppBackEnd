@@ -30,6 +30,7 @@ repositories {
 
 dependencies {
 
+	implementation 'org.springframework:spring-web:6.1.11'
 	//Create RESTful routes
 	implementation 'org.springframework.boot:spring-boot-starter-web' 
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
