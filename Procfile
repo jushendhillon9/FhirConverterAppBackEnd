@@ -1,1 +1,1 @@
-web: java -jar build/libs/FhirConverterApp.jar
+web: java -jar FhirConverterApp.jar
