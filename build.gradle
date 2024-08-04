@@ -1,0 +1,57 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.2'
+	id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+
+	//Create RESTful routes
+	implementation 'org.springframework.boot:spring-boot-starter-web' 
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// HAPI FHIR
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:5.5.2'
+
+    // Apache Commons CSV
+    implementation 'org.apache.commons:commons-csv:1.8'
+
+    // Apache Commons FileUpload for handling multipart requests
+    implementation 'commons-fileupload:commons-fileupload:1.5'
+
+	runtimeOnly 'com.h2database:h2'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+	testImplementation 'org.springframework:spring-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+
+	// Spring security and google OAuth 2 dependencies
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	//Google Cloud Storage Dependencies, necessary for user to select GCP Buckets
+	implementation 'com.google.cloud:google-cloud-storage:2.2.0'
+
+	//necessary for FhirStoreExport file
+	implementation("com.google.apis:google-api-services-healthcare:v1-rev20220629-1.32.1")
+
+	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
