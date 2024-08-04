@@ -70,7 +70,7 @@ tasks.named('test') {
 }
 
 shadowJar {
-    archiveBaseName.set('FhirConverterApp')
+    archiveBaseName.set('FhirConverterApp1')
     archiveClassifier.set('')
     archiveVersion.set('')
     mergeServiceFiles()
