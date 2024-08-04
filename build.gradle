@@ -18,7 +18,7 @@ jar {
     destinationDirectory = file("$buildDir/libs")
 	manifest {
         attributes(
-            'Main-Class': 'com.localhost.FileTypeChecker'  // Replace with your actual main class
+            'Main-Class': 'com.localhost.fhirconverter.FileTypeChecker'  // Replace with your actual main class
         )
     }
 }
