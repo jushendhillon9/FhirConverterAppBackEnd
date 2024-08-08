@@ -8,9 +8,11 @@ import com.google.api.services.healthcare.v1.CloudHealthcareScopes;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -74,9 +76,20 @@ public class FhirUploadService {
   private static CloudHealthcare createClient() throws IOException {
     // Use Application Default Credentials (ADC) to authenticate the requests
     // For more information see https://cloud.google.com/docs/authentication/production
+
+    String credentialsJson = System.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON");
+    if (credentialsJson == null || credentialsJson.isEmpty()) {
+        throw new IOException("Google Cloud credentials not found in environment variables");
+    }
+
     GoogleCredentials credential = GoogleCredentials.fromStream(
-            new FileInputStream("src/main/resources/serviceKey.json"))
-            .createScoped(Collections.singleton(CloudHealthcareScopes.CLOUD_PLATFORM));
+      new ByteArrayInputStream(credentialsJson.getBytes(StandardCharsets.UTF_8)))
+      .createScoped(Collections.singleton(CloudHealthcareScopes.CLOUD_PLATFORM));
+
+
+    // GoogleCredentials credential = GoogleCredentials.fromStream(
+    //         new FileInputStream("src/main/resources/serviceKey.json"))
+    //         .createScoped(Collections.singleton(CloudHealthcareScopes.CLOUD_PLATFORM));
 
     // Create a HttpRequestInitializer, which will provide a baseline configuration to all requests.
     HttpRequestInitializer requestInitializer =
