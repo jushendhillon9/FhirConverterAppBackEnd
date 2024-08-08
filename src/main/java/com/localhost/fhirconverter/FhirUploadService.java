@@ -77,7 +77,7 @@ public class FhirUploadService {
     // Use Application Default Credentials (ADC) to authenticate the requests
     // For more information see https://cloud.google.com/docs/authentication/production
 
-    String credentialsJson = System.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON");
+    String credentialsJson = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
     if (credentialsJson == null || credentialsJson.isEmpty()) {
         throw new IOException("Google Cloud credentials not found in environment variables");
     }
