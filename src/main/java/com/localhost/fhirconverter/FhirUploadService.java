@@ -79,7 +79,7 @@ public class FhirUploadService {
 
     String credentialsJson = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
     if (credentialsJson == null || credentialsJson.isEmpty()) {
-        throw new IOException("Google Cloud credentials not found in environment variables");
+        throw new IOException("Google Cloud credentials not present in environment variables");
     }
 
     GoogleCredentials credential = GoogleCredentials.fromStream(
