@@ -85,20 +85,12 @@ public class FhirUploadService {
     // Use Application Default Credentials (ADC) to authenticate the requests
     // For more information see https://cloud.google.com/docs/authentication/production
 
-    String jsonCredentials = System.getenv("GOOGLE_APPLICATION_CREDENTIALS_CONTENT");
+    String jsonCredentials = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
     if (jsonCredentials == null || jsonCredentials.isEmpty()) {
         throw new IOException("Google Cloud credentials not present in environment variables");
     }
 
-    File tempFile = File.createTempFile("gcloud-credentials", ".json");
-
-    try (FileWriter writer = new FileWriter(tempFile)) {
-      writer.write(jsonCredentials);
-    }
-    
-    System.setProperty("GOOGLE_APPLICATION_CREDENTIALS", tempFile.getAbsolutePath());
-
-    try (FileInputStream inputStream = new FileInputStream(tempFile)) {
+    try (FileInputStream inputStream = new FileInputStream(jsonCredentials)) {
       GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream)
           .createScoped(Collections.singleton(CloudHealthcareScopes.CLOUD_PLATFORM));
     // GoogleCredentials credential = GoogleCredentials.fromStream(
