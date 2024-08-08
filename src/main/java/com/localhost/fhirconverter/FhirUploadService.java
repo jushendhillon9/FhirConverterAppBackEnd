@@ -8,8 +8,16 @@ import com.google.api.services.healthcare.v1.CloudHealthcareScopes;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -77,24 +85,32 @@ public class FhirUploadService {
     // Use Application Default Credentials (ADC) to authenticate the requests
     // For more information see https://cloud.google.com/docs/authentication/production
 
-    String credentialsJson = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
-    if (credentialsJson == null || credentialsJson.isEmpty()) {
+    String jsonCredentials = System.getenv("GOOGLE_APPLICATION_CREDENTIALS_CONTENT");
+    if (jsonCredentials == null || jsonCredentials.isEmpty()) {
         throw new IOException("Google Cloud credentials not present in environment variables");
     }
 
-    GoogleCredentials credential = GoogleCredentials.fromStream(
-      new ByteArrayInputStream(credentialsJson.getBytes(StandardCharsets.UTF_8)))
-      .createScoped(Collections.singleton(CloudHealthcareScopes.CLOUD_PLATFORM));
+    File tempFile = File.createTempFile("gcloud-credentials", ".json");
 
+    try (FileWriter writer = new FileWriter(tempFile)) {
+      writer.write(jsonCredentials);
+    }
+    
+    System.setProperty("GOOGLE_APPLICATION_CREDENTIALS", tempFile.getAbsolutePath());
 
+    try (FileInputStream inputStream = new FileInputStream(tempFile)) {
+      GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream)
+          .createScoped(Collections.singleton(CloudHealthcareScopes.CLOUD_PLATFORM));
     // GoogleCredentials credential = GoogleCredentials.fromStream(
     //         new FileInputStream("src/main/resources/serviceKey.json"))
     //         .createScoped(Collections.singleton(CloudHealthcareScopes.CLOUD_PLATFORM));
 
     // Create a HttpRequestInitializer, which will provide a baseline configuration to all requests.
+
+
     HttpRequestInitializer requestInitializer =
         request -> {
-            new HttpCredentialsAdapter(credential).initialize(request);
+            new HttpCredentialsAdapter(credentials).initialize(request);
             request.setConnectTimeout(60000); // 1 minute connect timeout
             request.setReadTimeout(60000); // 1 minute read timeout
         };
@@ -103,6 +119,7 @@ public class FhirUploadService {
     return new CloudHealthcare.Builder(HTTP_TRANSPORT, JSON_FACTORY, requestInitializer)
             .setApplicationName("your-application-name")
             .build();
+      }
   }
 
   private static String getAccessToken() throws IOException {
