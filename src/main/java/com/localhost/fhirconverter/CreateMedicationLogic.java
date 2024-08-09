@@ -109,11 +109,17 @@ public class CreateMedicationLogic {
     }
 
     private static CloudHealthcare createClient() throws IOException {
-        GoogleCredentials credential = GoogleCredentials.fromStream(new FileInputStream("src/main/resources/serviceKey.json"))
-                .createScoped(Collections.singleton(CloudHealthcareScopes.CLOUD_PLATFORM));
+        String jsonCredentials = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
+        if (jsonCredentials == null || jsonCredentials.isEmpty()) {
+            throw new IOException("Google Cloud credentials not present in environment variables");
+        }
+
+        try (FileInputStream inputStream = new FileInputStream(jsonCredentials)) {
+        GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream)
+          .createScoped(Collections.singleton(CloudHealthcareScopes.CLOUD_PLATFORM));
 
         HttpRequestInitializer requestInitializer = request -> {
-            new HttpCredentialsAdapter(credential).initialize(request);
+            new HttpCredentialsAdapter(credentials).initialize(request);
             request.setConnectTimeout(60000); // 1 minute connect timeout
             request.setReadTimeout(60000); // 1 minute read timeout
         };
@@ -121,6 +127,7 @@ public class CreateMedicationLogic {
         return new CloudHealthcare.Builder(HTTP_TRANSPORT, JSON_FACTORY, requestInitializer)
                 .setApplicationName("your-application-name")
                 .build();
+        }
     }
 
     private static String getAccessToken() throws IOException {
