@@ -35,7 +35,13 @@ public class FhirResourceSearch {
 
     static {
         try {
-            credentials = GoogleCredentials.fromStream(new FileInputStream("/Users/jushendhillon/fhirFiles/toFhirConverterApp/Back-End/demo/src/main/resources/serviceKey.json"))
+            String jsonCredentials = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
+            if (jsonCredentials == null || jsonCredentials.isEmpty()) {
+                    throw new IOException("Google Cloud credentials not present in environment variables");
+            }
+            FileInputStream inputStream = new FileInputStream(jsonCredentials);
+
+            GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream)
                     .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
         } catch (IOException e) {
             e.printStackTrace();
