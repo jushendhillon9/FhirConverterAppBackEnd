@@ -41,7 +41,7 @@ public class FhirResourceSearch {
             }
             FileInputStream inputStream = new FileInputStream(jsonCredentials);
 
-            GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream)
+            credentials = GoogleCredentials.fromStream(inputStream)
                     .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
         } catch (IOException e) {
             e.printStackTrace();
